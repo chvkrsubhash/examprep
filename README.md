@@ -80,7 +80,7 @@ FIREBASE_MESSAGING_SENDER_ID
 FIREBASE_APP_ID
 ```
 
-In Firebase Authentication, enable the `Email/Password` provider and create the user account that will access Exam Prep. Add the deployed Vercel domain to Firebase Authentication's Authorized domains list. Password reset emails are sent through Firebase when the user selects `Forgot password?`. Redeploy after changing any Vercel environment variable.
+In Firebase Authentication, enable the `Email/Password` provider. Users can then create their own account from the Exam Prep sign-in page, sign in, and receive Firebase password-reset emails from `Forgot password?`. Add the deployed Vercel domain to Firebase Authentication's Authorized domains list. Redeploy after changing any Vercel environment variable.
 
 ### Weekly Rough-Work Archive
 
