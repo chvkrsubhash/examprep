@@ -66,3 +66,19 @@ Open `http://localhost:4173`.
 This project is deployable as a static site. Import the GitHub repository in Vercel, keep the framework preset as `Other`, and leave the build command and output directory empty. The committed `vercel.json` applies cache and security headers.
 
 No environment variables are required for the current MVP because data stays in the visitor's browser. The planned Firebase variables are listed, commented out, in `.env.example`; add real values only after Firebase integration, using Vercel Project Settings > Environment Variables for Production, Preview, and Development. Redeploy after changing any Vercel environment variable.
+
+### Weekly Rough-Work Archive
+
+During a weekly mock, the pencil icon opens a canvas booklet with one writable rough-work page per question. The app saves changed pages in browser storage, so the `Weekly Rough Notes` page remains available after submission. It can also export the full booklet as a PDF, with every question printed above its corresponding canvas page.
+
+To enable the optional private S3 archive, add these Vercel variables and redeploy:
+
+```text
+AWS_REGION
+AWS_S3_BUCKET
+AWS_S3_PREFIX=weekly-rough-work
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+```
+
+The supplied Vercel function writes only `PutObject` requests to the configured bucket and prefix. Use a dedicated IAM identity restricted to that prefix; do not expose AWS credentials in frontend code or commit them to the repository.
