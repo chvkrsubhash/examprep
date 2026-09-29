@@ -1,4 +1,4 @@
-import { createReadStream, existsSync } from 'node:fs';
+import { createReadStream, existsSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { extname, join, normalize } from 'node:path';
 
@@ -8,7 +8,7 @@ const types = { '.css': 'text/css', '.html': 'text/html', '.js': 'text/javascrip
 createServer((request, response) => {
   const requested = request.url === '/' ? '/index.html' : request.url.split('?')[0];
   const file = normalize(join(root, requested));
-  if (!file.startsWith(root) || !existsSync(file)) {
+  if (!file.startsWith(root) || !existsSync(file) || !statSync(file).isFile()) {
     response.writeHead(404).end('Not found');
     return;
   }
