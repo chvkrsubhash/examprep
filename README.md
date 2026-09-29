@@ -65,7 +65,18 @@ Open `http://localhost:4173`.
 
 This project is deployable as a static site. Import the GitHub repository in Vercel, keep the framework preset as `Other`, and leave the build command and output directory empty. The committed `vercel.json` applies cache and security headers.
 
-No environment variables are required for the current MVP because data stays in the visitor's browser. The planned Firebase variables are listed, commented out, in `.env.example`; add real values only after Firebase integration, using Vercel Project Settings > Environment Variables for Production, Preview, and Development. Redeploy after changing any Vercel environment variable.
+No environment variables are required for local question and notes storage. To enable the required sign-in screen, create a Firebase web app and add its values from `.env.example` in Vercel Project Settings > Environment Variables for Production, Preview, and Development:
+
+```text
+FIREBASE_API_KEY
+FIREBASE_AUTH_DOMAIN
+FIREBASE_PROJECT_ID
+FIREBASE_STORAGE_BUCKET
+FIREBASE_MESSAGING_SENDER_ID
+FIREBASE_APP_ID
+```
+
+In Firebase Authentication, enable the `Email/Password` provider and create the user account that will access Exam Prep. Add the deployed Vercel domain to Firebase Authentication's Authorized domains list. Password reset emails are sent through Firebase when the user selects `Forgot password?`. Redeploy after changing any Vercel environment variable.
 
 ### Weekly Rough-Work Archive
 
