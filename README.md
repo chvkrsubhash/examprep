@@ -61,6 +61,10 @@ node serve.mjs
 
 Open `http://localhost:4173`.
 
+## Sample CSV
+
+Use [`assets/exam-prep-sample-questions.csv`](assets/exam-prep-sample-questions.csv) as an import template. It contains three practice questions only and is never loaded into the question bank automatically. The Import Questions page also provides a `Download sample CSV` button.
+
 ## Deploy To Vercel
 
 This project is deployable as a static site. Import the GitHub repository in Vercel, keep the framework preset as `Other`, and leave the build command and output directory empty. The committed `vercel.json` applies cache and security headers.
