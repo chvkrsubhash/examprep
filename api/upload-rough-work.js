@@ -29,10 +29,33 @@ export default async function handler(request, response) {
   const signature = createHmac('sha256', signingKey(secret, date, region)).update(stringToSign).digest('hex');
   const authorization = `AWS4-HMAC-SHA256 Credential=${accessKey}/${scope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
   const result = await new Promise(resolve => {
-    const upload = https.request({ hostname: host, path: `/${key.split('/').map(encodeURIComponent).join('/')}`, method: 'PUT', headers: { 'Content-Type': 'application/pdf', 'Content-Length': body.length, 'x-amz-content-sha256': payloadHash, 'x-amz-date': amzDate, Authorization: authorization } }, uploadResponse => resolve({ status: uploadResponse.statusCode, key }));
+    const upload = https.request({ hostname: host, path: `/${key.split('/').map(encodeURIComponent).join('/')}`, method: 'PUT', headers: { 'Content-Type': 'application/pdf', 'Content-Length': body.length, 'x-amz-content-sha256': payloadHash, 'x-amz-date': amzDate, Authorization: authorization } }, uploadResponse => {
+      const respChunks = [];
+      uploadResponse.on('data', chunk => respChunks.push(chunk));
+      uploadResponse.on('end', () => {
+        const respBody = Buffer.concat(respChunks).toString('utf8');
+        resolve({ status: uploadResponse.statusCode, key, body: respBody });
+      });
+    });
     upload.on('error', error => resolve({ error: error.message }));
     upload.end(body);
   });
-  if (result.error || result.status < 200 || result.status >= 300) return response.status(502).json({ error: result.error || 'S3 rejected the PDF upload.' });
+  if (result.error || result.status < 200 || result.status >= 300) {
+    let msg = 'S3 rejected the PDF upload.';
+    if (result.body) {
+      const codeMatch = result.body.match(/<Code>(.*?)<\/Code>/);
+      const msgMatch = result.body.match(/<Message>(.*?)<\/Message>/);
+      if (codeMatch && msgMatch) {
+        msg = `S3 ${codeMatch[1]}: ${msgMatch[1]}`;
+      } else if (msgMatch) {
+        msg = `S3: ${msgMatch[1]}`;
+      } else if (codeMatch) {
+        msg = `S3: ${codeMatch[1]}`;
+      }
+    } else if (result.error) {
+      msg = result.error;
+    }
+    return response.status(result.status && result.status >= 400 ? result.status : 502).json({ error: msg, code: result.status });
+  }
   return response.status(200).json({ key: result.key });
 }
